@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
@@ -56,5 +57,26 @@ public class PostCommentController {
         postService.deleteComment(post, commentId);
 
         return "%d번 댓글을 삭제하였습니다.".formatted(commentId);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class CommentModifyForm {
+        @NotBlank(message = "댓글 내용을 입력해주세요")
+        @Size(min = 2, max = 100, message = "댓글 길이 준수")
+        private String content;
+    }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}/modify")
+    @Transactional
+    @ResponseBody
+    public String modify(@PathVariable int postId,
+                         @PathVariable int commentId,
+                         @Valid CommentWriteForm commentForm) {
+        Post post = postService.findById(postId).get();
+        postService.modifyComment(post, commentId, commentForm.getContent());
+            
+        return "%d번 댓글이 수정되었습니다.".formatted(commentId);
     }
 }

@@ -16,8 +16,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostComment extends BaseEntity {
 
-    private String comment;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
+
+    public void modify(String content) {
+        this.content = content;
+    }
 }

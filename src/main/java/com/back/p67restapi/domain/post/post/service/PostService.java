@@ -1,5 +1,6 @@
 package com.back.p67restapi.domain.post.post.service;
 
+import com.back.p67restapi.domain.post.comment.entity.PostComment;
 import com.back.p67restapi.domain.post.post.entity.Post;
 import com.back.p67restapi.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,10 @@ public class PostService {
 
     public void deleteComment(Post post, int id) {
         post.removeComment(id);
+    }
+
+    public PostComment modifyComment(Post post, int commentId, String content) {
+        return post.modifyComment(commentId, content);
     }
 
 //
