@@ -66,6 +66,4 @@ public class Post extends BaseEntity {
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
     }
 
-
-
 }
