@@ -1,10 +1,12 @@
 package com.back.p67restapi.domain.post.post.controller;
 
+import com.back.p67restapi.domain.post.post.dto.PostDto;
 import com.back.p67restapi.domain.post.post.entity.Post;
 import com.back.p67restapi.domain.post.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -15,14 +17,10 @@ import java.io.Reader;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
-
 
     record PostWriteForm(
             @NotBlank(message = "01-title-제목을 입력해주세요.")
@@ -33,6 +31,21 @@ public class PostController {
             String content
     ) {
     }
+
+    @GetMapping("/posts")
+    @ResponseBody
+    public List<PostDto> list() {
+        List<Post> postList = postService.findAll();
+
+        PostDto postDto = new PostDto(postService.findById(1L).get());
+
+        List<PostDto> postDtoList = postList.stream()
+                .map(post -> new PostDto(post))
+                .toList();
+
+        return postDtoList;
+    }
+
 
     @GetMapping("/posts/write")
     public String write(@ModelAttribute("form") PostWriteForm form) {
@@ -67,7 +80,7 @@ public class PostController {
 
     @GetMapping("/posts/{id}/modify")
     public String modify(
-            @PathVariable int id,
+            @PathVariable Long id,
             @ModelAttribute("form") PostModifyForm form,
             Model model
     ) {
@@ -83,7 +96,7 @@ public class PostController {
     @PutMapping("/posts/{id}")
     @Transactional
     public String doModify(
-            @PathVariable int id,
+            @PathVariable Long id,
             @ModelAttribute("form") @Valid PostModifyForm form,
             BindingResult bindingResult,
             Model model
@@ -104,7 +117,7 @@ public class PostController {
     @DeleteMapping("/posts/{id}")
     @Transactional
     public String doDelete(
-            @PathVariable int id
+            @PathVariable Long id
     ) {
 
         Post post = postService.findById(id).get();
@@ -117,7 +130,7 @@ public class PostController {
 
     @GetMapping("/posts/{id}")
     @Transactional(readOnly = true)
-    public String detail(@PathVariable int id, Model model, Reader reader) {
+    public String detail(@PathVariable Long id, Model model, Reader reader) {
 
         Post post = postService.findById(id).get();
         model.addAttribute("post", post);
@@ -125,12 +138,14 @@ public class PostController {
         return "post/post/detail";
     }
 
-    @GetMapping("/posts")
-    @Transactional(readOnly = true)
-    public String list(Model model) {
+//    @GetMapping("/posts")
+//    @Transactional(readOnly = true)
+//    public String list(Model model) {
+//
+//        List<Post> posts = postService.findAll();
+//        model.addAttribute("posts", posts);
+//        return "post/post/list";
+//    }
 
-        List<Post> posts = postService.findAll();
-        model.addAttribute("posts", posts);
-        return "post/post/list";
-    }
+
 }

@@ -28,7 +28,7 @@ public class PostService {
         return postRepository.count();
     }
 
-    public Optional<Post> findById(int id) {
+    public Optional<Post> findById(Long id) {
         return postRepository.findById(id);
     }
 
@@ -40,15 +40,15 @@ public class PostService {
         post.update(title, content);
     }
 
-    public void writeComment(Post post, String content) {
-        post.addComment(content);
+    public PostComment writeComment(Post post, String content) {
+        return post.addComment(content);
     }
 
-    public void deleteComment(Post post, int id) {
+    public void deleteComment(Post post, Long id) {
         post.removeComment(id);
     }
 
-    public PostComment modifyComment(Post post, int commentId, String content) {
+    public PostComment modifyComment(Post post, Long commentId, String content) {
         return post.modifyComment(commentId, content);
     }
 

@@ -22,24 +22,22 @@ public class PostCommentController {
 
     private final PostService postService;
 
-    @AllArgsConstructor
-    @Getter
-    public static class CommentWriteForm {
-        @NotBlank(message = "댓글 내용을 입력해주세요")
-        @Size(min = 2, max=100, message = "댓글 내용은 최소2, 최대 100")
-        private String content;
-    }
+    record CommentWriteForm(
+            @NotBlank(message = "댓글 내용을 입력해주세요")
+            @Size(min=2, max=100, message = "댓글 글자수를 맞춰주세요")
+            String content
+    ){}
 
     @GetMapping("/posts/{postId}/comments/write")
     @Transactional
     @ResponseBody
     public String write(
-            @PathVariable int postId,
+            @PathVariable Long postId,
             @Valid CommentWriteForm commentForm
     ) {
 
         Post post = postService.findById(postId).get();
-        PostComment postComment = post.addComment(commentForm.content);
+        PostComment postComment = postService.writeComment(post, commentForm.content());
 
         postService.flush();
 
@@ -50,8 +48,8 @@ public class PostCommentController {
     @Transactional
     @ResponseBody
     public String delete(
-            @PathVariable int postId,
-            @PathVariable int commentId
+            @PathVariable Long postId,
+            @PathVariable Long commentId
     ) {
         Post post = postService.findById(postId).get();
         postService.deleteComment(post, commentId);
@@ -59,24 +57,22 @@ public class PostCommentController {
         return "%d번 댓글을 삭제하였습니다.".formatted(commentId);
     }
 
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class CommentModifyForm {
-        @NotBlank(message = "댓글 내용을 입력해주세요")
-        @Size(min = 2, max = 100, message = "댓글 길이 준수")
-        private String content;
-    }
+
+    record CommentModifyForm(
+            @NotBlank(message = "댓글 내용을 입력해주세요")
+            @Size(min=2, max = 100, message = "댓글 글자수를 맞춰주세요")
+            String content
+    ){}
 
     @GetMapping("/posts/{postId}/comments/{commentId}/modify")
     @Transactional
     @ResponseBody
-    public String modify(@PathVariable int postId,
-                         @PathVariable int commentId,
-                         @Valid CommentWriteForm commentForm) {
+    public String modify(@PathVariable Long postId,
+                         @PathVariable Long commentId,
+                         @Valid CommentModifyForm commentForm) {
         Post post = postService.findById(postId).get();
-        postService.modifyComment(post, commentId, commentForm.getContent());
-            
+        postService.modifyComment(post, commentId, commentForm.content());
+
         return "%d번 댓글이 수정되었습니다.".formatted(commentId);
     }
 }

@@ -1,6 +1,7 @@
 package com.back.p67restapi.domain.post.post.entity;
 
 import com.back.p67restapi.domain.post.comment.entity.PostComment;
+import com.back.p67restapi.domain.post.post.dto.PostDto;
 import com.back.p67restapi.global.jpa.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -43,11 +44,11 @@ public class Post extends BaseEntity {
         return postComment;
     }
 
-    public void removeComment(int id) {
+    public void removeComment(Long id) {
         comments.removeIf(comment -> comment.getId() == id);
     }
 
-    public PostComment modifyComment(int commentId, String content) {
+    public PostComment modifyComment(Long commentId, String content) {
         PostComment postComment = comments.stream()
                 .filter(comment -> comment.getId() == commentId)
                 .findFirst()
@@ -57,4 +58,14 @@ public class Post extends BaseEntity {
 
         return postComment;
     }
+
+    public PostComment findCommentById(Long id) {
+        return comments.stream()
+                .filter(comment -> comment.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다"));
+    }
+
+
+
 }
