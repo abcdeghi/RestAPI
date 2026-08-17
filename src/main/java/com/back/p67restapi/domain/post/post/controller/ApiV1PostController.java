@@ -4,6 +4,9 @@ import com.back.p67restapi.domain.post.post.dto.PostDto;
 import com.back.p67restapi.domain.post.post.entity.Post;
 import com.back.p67restapi.domain.post.post.service.PostService;
 import com.back.p67restapi.global.rsData.RsData;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,7 +22,7 @@ import java.util.List;
 public class ApiV1PostController {
     private final PostService postService;
 
-    @GetMapping
+    @GetMapping("")
     public List<PostDto> list() {
         List<Post> postList = postService.findAll();
 
@@ -54,4 +57,22 @@ public class ApiV1PostController {
         return rsData;
     }
 
+    record PostWriteReqBody(
+            @NotBlank()
+            @Size(min=2, max = 100)
+            String title,
+            String content
+    ) {}
+
+    @PostMapping("")
+    public RsData<PostDto> createItem(
+            @RequestBody @Valid PostWriteReqBody reqBody
+    ) {
+        Post post = postService.write(reqBody.title, reqBody.content);
+        return new RsData<PostDto>(
+                "201-1",
+                "%d번 게시물이 생성되었습니다".formatted(post.getId()),
+                new PostDto(post)
+        );
+    }
 }
