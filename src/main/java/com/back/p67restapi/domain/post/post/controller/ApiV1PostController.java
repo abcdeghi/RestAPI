@@ -38,21 +38,18 @@ public class ApiV1PostController {
         return new PostDto(post);
     }
 
-    @GetMapping("/{postId}/delete")
-    public RsData<PostDto> deleteItem(
+    @DeleteMapping("/{postId}")
+    public RsData<Void> deleteItem(
             @PathVariable Long postId
     ) {
         Post post = postService.findById(postId).get();
 
         postService.delete(post);
 
-        RsData<PostDto> rsData = new RsData<PostDto>(
+        RsData<Void> rsData = new RsData<Void>(
                 "204-1",
-                "%d번 게시물이 삭제되었습니다".formatted(postId),
-                new PostDto(post)
+                "%d번 게시물이 삭제되었습니다".formatted(postId)
         );
-
-        PostDto postDto = rsData.getData();
 
         return rsData;
     }
