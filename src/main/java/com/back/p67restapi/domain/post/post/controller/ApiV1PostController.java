@@ -39,7 +39,7 @@ public class ApiV1PostController {
     }
 
     @GetMapping("/{postId}/delete")
-    public RsData deleteItem(
+    public RsData<PostDto> deleteItem(
             @PathVariable Long postId
     ) {
         Post post = postService.findById(postId).get();
