@@ -46,11 +46,15 @@ public class ApiV1PostController {
 
         postService.delete(post);
 
-        return new RsData(
+        RsData<PostDto> rsData = new RsData<PostDto>(
                 "204-1",
                 "%d번 게시물이 삭제되었습니다".formatted(postId),
                 new PostDto(post)
         );
+
+        PostDto postDto = rsData.getData();
+
+        return rsData;
     }
 
 }

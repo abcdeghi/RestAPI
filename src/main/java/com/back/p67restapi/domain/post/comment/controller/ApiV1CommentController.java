@@ -78,9 +78,13 @@ public class ApiV1CommentController {
 
         postService.deleteComment(post, postComment.getId());
 
-        return new RsData("204-1"
+        RsData<PostCommentDto> rsData = new RsData<PostCommentDto>("204-1"
                 , "%d번 댓글이 삭제되었습니다.".formatted(postComment.getId())
                 , new PostCommentDto(postComment));
+
+        PostCommentDto postCommentDto = rsData.getData();
+
+        return rsData;
     }
 
     record CommenModifyForm(
