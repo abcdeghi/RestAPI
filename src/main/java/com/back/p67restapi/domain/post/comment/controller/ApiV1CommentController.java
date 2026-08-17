@@ -4,6 +4,7 @@ import com.back.p67restapi.domain.post.comment.dto.PostCommentDto;
 import com.back.p67restapi.domain.post.comment.entity.PostComment;
 import com.back.p67restapi.domain.post.post.entity.Post;
 import com.back.p67restapi.domain.post.post.service.PostService;
+import com.back.p67restapi.global.rsData.RsData;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,7 +69,7 @@ public class ApiV1CommentController {
 
     @GetMapping("/{commentId}/delete")
     @Transactional
-    public String DeleteComment(
+    public RsData DeleteComment(
             @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
@@ -75,7 +78,9 @@ public class ApiV1CommentController {
 
         postService.deleteComment(post, postComment.getId());
 
-        return "%d번 댓글이 삭제되었습니다.".formatted(commentId);
+        return new RsData("204-1"
+                , "%d번 댓글이 삭제되었습니다.".formatted(postComment.getId())
+                , new PostCommentDto(postComment));
     }
 
     record CommenModifyForm(

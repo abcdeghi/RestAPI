@@ -47,7 +47,7 @@ public class PostCommentController {
     @GetMapping("/posts/{postId}/comments/{commentId}/delete")
     @Transactional
     @ResponseBody
-    public String delete(
+    public String deleteItem(
             @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
@@ -67,7 +67,7 @@ public class PostCommentController {
     @GetMapping("/posts/{postId}/comments/{commentId}/modify")
     @Transactional
     @ResponseBody
-    public String modify(@PathVariable Long postId,
+    public String modifyItem(@PathVariable Long postId,
                          @PathVariable Long commentId,
                          @Valid CommentModifyForm commentForm) {
         Post post = postService.findById(postId).get();

@@ -3,14 +3,13 @@ package com.back.p67restapi.domain.post.post.controller;
 import com.back.p67restapi.domain.post.post.dto.PostDto;
 import com.back.p67restapi.domain.post.post.entity.Post;
 import com.back.p67restapi.domain.post.post.service.PostService;
+import com.back.p67restapi.global.rsData.RsData;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,12 +19,38 @@ import java.util.List;
 public class ApiV1PostController {
     private final PostService postService;
 
-    @GetMapping("")
-    @Transactional(readOnly = true)
+    @GetMapping
     public List<PostDto> list() {
-        return postService.findAll().stream()
+        List<Post> postList = postService.findAll();
+
+        List<PostDto> postDtoList = postList.stream()
                 .map(post -> new PostDto(post))
                 .toList();
+
+        return postDtoList;
+    }
+
+    @GetMapping("/{postId}")
+    public PostDto getItem(
+            @PathVariable Long postId
+    ) {
+        Post post = postService.findById(postId).get();
+        return new PostDto(post);
+    }
+
+    @GetMapping("/{postId}/delete")
+    public RsData deleteItem(
+            @PathVariable Long postId
+    ) {
+        Post post = postService.findById(postId).get();
+
+        postService.delete(post);
+
+        return new RsData(
+                "204-1",
+                "%d번 게시물이 삭제되었습니다".formatted(postId),
+                new PostDto(post)
+        );
     }
 
 }
