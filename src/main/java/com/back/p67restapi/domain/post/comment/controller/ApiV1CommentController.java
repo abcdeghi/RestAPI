@@ -77,5 +77,25 @@ public class ApiV1CommentController {
 
         return "%d번 댓글이 삭제되었습니다.".formatted(commentId);
     }
-    
+
+    record CommenModifyForm(
+            @NotBlank(message = "댓글 내용을 입력해주세요.")
+            @Size(min = 2, max = 100, message = "댓글 내용은 2글자 이상 100글자 이하로 입력해주세요.")
+            String content
+    ) {}
+
+    @GetMapping("/{commentId}/modify")
+    @Transactional
+    public String ModifyComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @Valid CommenModifyForm form
+    ) {
+        Post post = postService.findById(postId).get();
+
+        PostComment postComment = post.findCommentById(commentId);
+        postService.modifyComment(post, postComment.getId(), form.content());
+
+        return "%d번 댓글이 수정되었습니다".formatted(commentId);
+    }
 }
