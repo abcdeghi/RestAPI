@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +64,7 @@ public class ApiV1CommentController {
             return "%d번 댓글이 성공적으로 등록되었습니다.".formatted(postComment.getId());
     }
 
-    @GetMapping("/{commentId}/delete")
+    @DeleteMapping("/{commentId}")
     @Transactional
     public RsData DeleteComment(
             @PathVariable Long postId,

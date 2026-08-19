@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -58,21 +59,59 @@ public class ApiV1PostController {
     }
 
     record PostWriteReqBody(
-            @NotBlank()
-            @Size(min=2, max = 100)
+            @NotBlank(message = "제목을 입력해주세요")
+            @Size(min=2, max = 100, message = "최소 2글자 최대 100글자로 작성해주세요")
             String title,
+            @NotBlank(message = "제목을 입력해주세요")
+            @Size(min=2, max = 100, message = "최소 2글자 최대 100글자로 작성해주세요")
             String content
     ) {}
 
+    record PostWriteResBody(
+            PostDto postDto,
+            long totalCount
+    ) {}
+
     @PostMapping("")
-    public RsData<PostDto> createItem(
+    @Transactional
+    public RsData<PostWriteResBody>createItem(
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
         Post post = postService.write(reqBody.title, reqBody.content);
-        return new RsData<PostDto>(
+
+        long totalCount = postService.count();
+
+        return new RsData<>(
                 "201-1",
                 "%d번 게시물이 생성되었습니다".formatted(post.getId()),
-                new PostDto(post)
+                new PostWriteResBody(
+                        new PostDto(post),
+                        totalCount
+                )
+        );
+    }
+
+    record PostModifyReqBody(
+            @NotBlank(message = "제목을 입력해주세요")
+            @Size(min=2, max = 100, message = "최소 2글자 최대 100글자로 작성해주세요")
+            String title,
+            @NotBlank(message = "제목을 입력해주세요")
+            @Size(min=2, max = 100, message = "최소 2글자 최대 100글자로 작성해주세요")
+            String content
+    ) {}
+
+    @PutMapping("/{postId}")
+    @Transactional
+    public RsData<Void> modifyItem(
+            @PathVariable Long postId,
+            @RequestBody @Valid PostModifyReqBody reqBody
+    ) {
+        Post post = postService.findById(postId).get();
+        postService.modify(post, reqBody.title, reqBody.content);
+
+        return new RsData(
+                "200-1",
+                "%d번 글이 수정되었습니다".formatted(postId)
         );
     }
 }
